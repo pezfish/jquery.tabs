@@ -1,3 +1,4 @@
+// Tabs
 (function($) {  
 	$.fn.tabs = function(options) {
 		var defaults = {
