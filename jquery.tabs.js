@@ -1,4 +1,4 @@
-//test
+//test 2
 
 (function($) {  
 	$.fn.tabs = function(options) {
