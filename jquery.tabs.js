@@ -9,7 +9,7 @@
 			hideOnClick:false
 		}
 		return this.each(function() {
-			if (options) { 
+			if (options) {
 				$.extend(defaults, options);
 			}
 			var el, obj, url, current, hash, title;
