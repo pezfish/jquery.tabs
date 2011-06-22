@@ -9,7 +9,6 @@
 (function($) {  
 	$.fn.tabs = function(options) {
 		var defaults = {
-			tab: "a",
 			section: ".section",
 			initialIndex: 0,
 			current: "current",
@@ -22,7 +21,7 @@
 			}
 			var el, obj, url, current, hash, title;
 			el = $(this);
-			el.delegate(defaults.tab, "click", onClick);
+			el.delegate("a", "click", onClick);
 			function onClick(event){
 				obj = $(event.currentTarget);
 				url = obj.attr("href");
