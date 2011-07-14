@@ -45,7 +45,7 @@
 				}
 			}
 			if(defaults.initialIndex !== null){
-				el.find(defaults.tab).eq(defaults.initialIndex).trigger("click");
+				el.find("a").eq(defaults.initialIndex).trigger("click");
 			} else {
 				$(defaults.section).hide();	
 			}
