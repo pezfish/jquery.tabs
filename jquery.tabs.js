@@ -1,14 +1,8 @@
-/**
-* jQuery Tabs
-* Copyright (c) 2011 Kevin Doyle
-* Dual licensed under the MIT and GPL licenses:
-* http://www.opensource.org/licenses/mit-license.php
-* http://www.gnu.org/licenses/gpl.html
-**/
-
+// Tabs
 (function($) {  
 	$.fn.tabs = function(options) {
 		var defaults = {
+			tab: "a",
 			section: ".section",
 			initialIndex: 0,
 			current: "current",
@@ -21,7 +15,7 @@
 			}
 			var el, obj, url, current, hash, title;
 			el = $(this);
-			el.delegate("a", "click", onClick);
+			el.delegate(defaults.tab, "click", onClick);
 			function onClick(event){
 				obj = $(event.currentTarget);
 				url = obj.attr("href");
@@ -45,7 +39,7 @@
 				}
 			}
 			if(defaults.initialIndex !== null){
-				el.find("a").eq(defaults.initialIndex).trigger("click");
+				el.find(defaults.tab).eq(defaults.initialIndex).trigger("click");
 			} else {
 				$(defaults.section).hide();	
 			}
