@@ -40,6 +40,7 @@
 				} else if(defaults.hideOnClick) {
 					current.removeClass(defaults.current);
 					$(url).hide();
+					defaults.onComplete.call(this);
 					return false;
 				} else {
 					return false;	
