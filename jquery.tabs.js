@@ -1,56 +1,106 @@
 /**
 * jQuery Tabs
-* Copyright (c) 2011 Kevin Doyle
+* Copyright (c) 2012 Kevin Doyle
 * Dual licensed under the MIT and GPL licenses:
 * http://www.opensource.org/licenses/mit-license.php
 * http://www.gnu.org/licenses/gpl.html
 **/
 
-(function($) {  
-	$.fn.tabs = function(options) {
-		var defaults = {
-			tab: "a",
-			section: ".section",
-			initialIndex: 0,
-			current: "current",
-			onComplete: function() {},
-			hideOnClick:false
-		}
-		return this.each(function() {
-			if (options) {
-				$.extend(defaults, options);
-			}
-			var el, obj, url, current, hash, title;
-			el = $(this);
-			el.delegate(defaults.tab, "click", onClick);
-			function onClick(event){
-				obj = $(event.currentTarget);
-				url = obj.attr("href");
-				current = el.find(defaults.tab+"."+defaults.current);
-				
-				if(!obj.hasClass(defaults.current)){
-					if(url.substring(0,4) !== "http"){
-						current.removeClass(defaults.current);
-						obj.addClass(defaults.current);
-						$(defaults.section).hide();
-						$(url).show();
-						defaults.onComplete.call(this);
-						return false;
-					}
-				} else if(defaults.hideOnClick) {
-					current.removeClass(defaults.current);
-					$(url).hide();
-					defaults.onComplete.call(this);
-					return false;
+
+/* ADD TAB OPTION, OBVIOUSLY YOU WOULD WANT TO SPECIFY WHICH LINKS ARE BEING USED AS BUTTONS */
+
+
+(function($, window, document, undefined){
+
+	var Tabs = function(el, options){
+		this.el = el;
+		this.$el = $(el);
+		this.options = options;
+		this.metadata = this.$el.data("tabs-options");
+	};
+
+	var obj, url, current, index, temphash;
+
+	Tabs.prototype = {
+		defaults : {
+			section : ".section",
+			initial : 0,
+			current : "current",
+			onComplete : function(){},
+			hideOnClick :false,
+			changeURL : false,
+			URLPrefix : "/tab/"
+		},
+
+		init : function(){
+			this.config = $.extend({}, this.defaults, this.options, this.metadata);
+			temphash = document.location.hash.split(this.config.URLPrefix)[1];
+
+			this.$el.on("click", "a", $.proxy(this, "_switchTab"));
+			
+			if(this.config.initial !== null){
+				if(this.config.changeURL && temphash !== undefined){
+					index = $("#" + temphash).index(this.config.section);
 				} else {
-					return false;	
+					if(typeof this.config.initial === "string"){
+						index = $("#" + this.config.initial).index(this.config.section);
+					} else if(typeof this.config.initial === "number"){
+						index = this.config.initial;
+					}
+				}
+				if(index >= $(this.config.section).length){
+					index = 0;
+				}
+				this.$el.find("a").eq(index).trigger("click");
+			} else {
+				$(this.config.section).hide();
+			}
+		},
+		_switchTab : function(event){
+			obj = $(event.currentTarget);
+			url = obj.attr("href");
+			current = this.$el.find("." + this.config.current);
+			
+			current.removeClass(this.config.current);
+			if(obj[0] !== current[0]){
+				obj.addClass(this.config.current);
+				$(this.config.section).hide();
+				$(url).show();
+
+				if(this.config.changeURL){
+					document.location.hash = _this.config.URLPrefix + url.slice(1);
+				}
+			} else if(this.config.hideOnClick){
+				$(url).hide();
+				if(this.config.changeURL){
+					this._removeHash();
 				}
 			}
-			if(defaults.initialIndex !== null){
-				el.find(defaults.tab).eq(defaults.initialIndex).trigger("click");
+			
+			this.config.onComplete.call(this);
+
+			return false;
+		},
+		_removeHash : function() { 
+			var scrollV, scrollH, loc = window.location;
+			if ("pushState" in history) {
+				history.pushState("", document.title, loc.pathname + loc.search);
 			} else {
-				$(defaults.section).hide();	
+				scrollV = document.body.scrollTop;
+				scrollH = document.body.scrollLeft;
+
+				loc.hash = "";
+				document.body.scrollTop = scrollV;
+				document.body.scrollLeft = scrollH;
 			}
+		}
+	};
+
+	Tabs.defaults = Tabs.prototype.defaults;
+
+	$.fn.tabs = function(options){
+		return this.each(function(){
+			new Tabs(this, options).init();
 		});
-	}
-})(jQuery);
+	};
+})(jQuery, window , document);
