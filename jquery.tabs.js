@@ -6,12 +6,7 @@
 * http://www.gnu.org/licenses/gpl.html
 **/
 
-
-/* ADD TAB OPTION, OBVIOUSLY YOU WOULD WANT TO SPECIFY WHICH LINKS ARE BEING USED AS BUTTONS */
-
-
 (function($, window, document, undefined){
-
 	var Tabs = function(el, options){
 		this.el = el;
 		this.$el = $(el);
@@ -24,6 +19,7 @@
 	Tabs.prototype = {
 		defaults : {
 			section : ".section",
+			tab : "a",
 			initial : 0,
 			current : "current",
 			onComplete : function(){},
@@ -36,7 +32,7 @@
 			this.config = $.extend({}, this.defaults, this.options, this.metadata);
 			temphash = document.location.hash.split(this.config.URLPrefix)[1];
 
-			this.$el.on("click", "a", $.proxy(this, "_switchTab"));
+			this.$el.on("click", this.config.tab, $.proxy(this, "_switchTab"));
 			
 			if(this.config.initial !== null){
 				if(this.config.changeURL && temphash !== undefined){
@@ -51,7 +47,7 @@
 				if(index >= $(this.config.section).length){
 					index = 0;
 				}
-				this.$el.find("a").eq(index).trigger("click");
+				this.$el.find(this.config.tab).eq(index).trigger("click");
 			} else {
 				$(this.config.section).hide();
 			}
