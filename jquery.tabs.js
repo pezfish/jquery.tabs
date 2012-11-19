@@ -27,7 +27,6 @@
 			changeURL : false,
 			URLPrefix : "/tab/"
 		},
-
 		init : function(){
 			this.config = $.extend({}, this.defaults, this.options, this.metadata);
 			temphash = document.location.hash.split(this.config.URLPrefix)[1];
@@ -64,7 +63,7 @@
 				$(url).show();
 
 				if(this.config.changeURL){
-					document.location.hash = _this.config.URLPrefix + url.slice(1);
+					document.location.hash = this.config.URLPrefix + url.slice(1);
 				}
 			} else if(this.config.hideOnClick){
 				$(url).hide();
