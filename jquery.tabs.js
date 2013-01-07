@@ -12,9 +12,12 @@
 		this.$el = $(el);
 		this.options = options;
 		this.metadata = this.$el.data("tabs-options");
+		this.obj = '';
+		this.url = '';
+		this.current = '';
+		this.index = '';
+		this.temphash = '';
 	};
-
-	var obj, url, current, index, temphash;
 
 	Tabs.prototype = {
 		defaults : {
@@ -29,44 +32,45 @@
 		},
 		init : function(){
 			this.config = $.extend({}, this.defaults, this.options, this.metadata);
-			temphash = document.location.hash.split(this.config.URLPrefix)[1];
-
+			this.temphash = document.location.hash.split(this.config.URLPrefix)[1];
 			this.$el.on("click", this.config.tab, $.proxy(this, "_switchTab"));
 			
 			if(this.config.initial !== null){
-				if(this.config.changeURL && temphash !== undefined){
-					index = $("#" + temphash).index(this.config.section);
+				if(this.config.changeURL && this.temphash !== undefined){
+					this.index = $("#" + this.temphash).index(this.config.section);
 				} else {
 					if(typeof this.config.initial === "string"){
-						index = $("#" + this.config.initial).index(this.config.section);
+						this.index = $("#" + this.config.initial).index(this.config.section);
 					} else if(typeof this.config.initial === "number"){
-						index = this.config.initial;
+						this.index = this.config.initial;
 					}
 				}
-				if(index >= $(this.config.section).length){
-					index = 0;
+				if(this.index >= $(this.config.section).length){
+					this.index = 0;
 				}
-				this.$el.find(this.config.tab).eq(index).trigger("click");
+				this.$el.find(this.config.tab).eq(this.index).trigger("click");
 			} else {
 				$(this.config.section).hide();
 			}
 		},
 		_switchTab : function(event){
-			obj = $(event.currentTarget);
-			url = obj.attr("href");
-			current = this.$el.find("." + this.config.current);
-			
-			current.removeClass(this.config.current);
-			if(obj[0] !== current[0]){
-				obj.addClass(this.config.current);
-				$(this.config.section).hide();
-				$(url).show();
+			this.obj = $(event.currentTarget);
+			this.url = this.obj.attr("href");
+			this.current = this.$el.find(this.config.tab+"." + this.config.current);
 
+			if(this.obj[0] !== this.current[0]){
+				this.current.removeClass(this.config.current);
+				
+				this.obj.addClass(this.config.current);
+				$(this.config.section).hide();
+				$(this.url).show();
+				
 				if(this.config.changeURL){
-					document.location.hash = this.config.URLPrefix + url.slice(1);
+					document.location.hash = this.config.URLPrefix + this.url.slice(1);
 				}
 			} else if(this.config.hideOnClick){
-				$(url).hide();
+				this.obj.removeClass(this.config.current);
+				$(this.url).hide();
 				if(this.config.changeURL){
 					this._removeHash();
 				}
